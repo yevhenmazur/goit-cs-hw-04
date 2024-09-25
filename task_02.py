@@ -5,8 +5,10 @@
 '''
 
 import multiprocessing
-from common import get_file_list, chunkify
+from common import get_file_list, chunkify, time_execution
 
+WORD = "error"
+PATH = "/var/log"
 
 def find_word_in_file(word: str, file_path: str):
     '''The function searches for a word in a file and returns the file path if found'''
@@ -31,6 +33,7 @@ def find_word_in_chunk(word, files_chunk, queue):
     queue.put(results)  # Відправляємо результати в Queue
 
 
+@time_execution
 def find_word_multiprocessing(word, directory):
     '''The function implements multi-process word search in all files in the directory'''
     result = {word: []}
@@ -50,20 +53,11 @@ def find_word_multiprocessing(word, directory):
 
     # Збираємо результати з кожного процесу
     for process in processes:
-        process.join()  # Чекаємо завершення процесу
-        result[word].extend(queue.get())  # Отримуємо дані з Queue
+        process.join()
+        result[word].extend(queue.get())
 
-    return result
-
-
-WORD = "error"
-PATH = "/var/log"
-
-
-def main():
-    result = find_word_multiprocessing(WORD, PATH)
     print(result)
 
 
 if __name__ == "__main__":
-    main()
+    find_word_multiprocessing(WORD, PATH)

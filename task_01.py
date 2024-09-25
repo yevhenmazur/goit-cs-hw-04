@@ -6,8 +6,10 @@
 
 import threading
 import multiprocessing
-from common import get_file_list, chunkify
+from common import get_file_list, chunkify, time_execution
 
+WORD = "error"
+PATH = "/var/log"
 
 def find_word_in_file(word: str, file_path: str, result, result_lock):
     '''
@@ -32,6 +34,7 @@ def find_word_in_chunk(word, files_chunk, result_lock, result):
         find_word_in_file(word, file_path, result, result_lock)
 
 
+@time_execution
 def find_word_multithread(word, directory):
     '''The function implements multi-threaded word search in all files in the directory'''
     result = {word: []}
@@ -51,16 +54,8 @@ def find_word_multithread(word, directory):
     for thread in threads:
         thread.join()
 
-    return result
-
-
-WORD = "error"
-PATH = "/var/log"
-
-def main():
-    result = find_word_multithread(WORD, PATH)
     print(result)
 
 
 if __name__ == "__main__":
-    main()
+    find_word_multithread(WORD, PATH)

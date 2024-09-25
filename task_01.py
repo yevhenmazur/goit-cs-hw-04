@@ -1,22 +1,12 @@
 '''
-Модуль паралельно обробляє та аналізує текстові файли
-для пошуку визначених ключових слів з використанням threading
+Модуль паралельно обробляє текстові файли
+для пошуку визначеного слова з використанням threading
 для багатопотокового програмування
 '''
 
-import os
 import threading
 import multiprocessing
-
-
-def get_file_list(directory: str) -> list:
-    '''The function traverses the directory and returns a list of files'''
-    file_list = []
-    for root, _, files in os.walk(directory):
-        for file in files:
-            file_path = os.path.join(root, file)
-            file_list.append(file_path)
-    return file_list
+from common import get_file_list, chunkify
 
 
 def find_word_in_file(word: str, file_path: str, result, result_lock):
@@ -36,13 +26,7 @@ def find_word_in_file(word: str, file_path: str, result, result_lock):
         print(f"Не вдалося відкрити файл {file_path}: {e}")
 
 
-def chunkify(lst: list, n: int) -> list:
-    '''Divides the list `lst` into `n` approximately equal parts'''
-    return [lst[i::n] for i in range(n)]
-
-
 def find_word_in_chunk(word, files_chunk, result_lock, result):
-# def find_word_in_chunk(word, files_chunk, result):
     '''Find word in chunk of file list'''
     for file_path in files_chunk:
         find_word_in_file(word, file_path, result, result_lock)
